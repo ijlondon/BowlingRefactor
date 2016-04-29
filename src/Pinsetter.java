@@ -122,7 +122,7 @@ public class Pinsetter {
 
     /** ballThrown()
      *
-     * Called to simulate a ball thrown comming in contact with the pinsetter
+     * Called to simulate a ball thrown coming in contact with the pinsetter
      *
      * @pre none
      * @post pins may have been knocked down and the thrownumber has been incremented
