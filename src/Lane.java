@@ -218,7 +218,7 @@ public class Lane extends Thread implements PinsetterObserver {
                         try {
                             Date date = new Date();
                             String dateString = "" + date.getHours() + ":" + date.getMinutes() + " " + date.getMonth() + "/" + date.getDay() + "/" + (date.getYear() + 1900);
-                            ScoreHistoryFile.addScore(currentThrower.getNick(), dateString, new Integer(cumulScores[bowlIndex][9]).toString());
+                            ScoreHistoryFile.addScore(currentThrower.getNick(), dateString, Integer.toString(cumulScores[bowlIndex][9]));
                         } catch (Exception e) {
                             System.err.println("Exception in addScore. " + e);
                         }
@@ -267,9 +267,8 @@ public class Lane extends Thread implements PinsetterObserver {
                         Bowler thisBowler = (Bowler) scoreIt.next();
                         ScoreReport sr = new ScoreReport(thisBowler, finalScores[myIndex++], gameNumber);
                         sr.sendEmail(thisBowler.getEmail());
-                        Iterator printIt = printVector.iterator();
-                        while (printIt.hasNext()) {
-                            if (thisBowler.getNick() == (String) printIt.next()) {
+                        for (Object aPrintVector : printVector) {
+                            if (thisBowler.getNick().equals((String) aPrintVector)) {
                                 System.out.println("Printing " + thisBowler.getNick());
                                 sr.sendPrintout();
                             }
@@ -311,7 +310,7 @@ public class Lane extends Thread implements PinsetterObserver {
                     }
                 }
 
-                if ((pe.totalPinsDown() != 10) && (pe.getThrowNumber() == 2 && tenthFrameStrike == false)) {
+                if ((pe.totalPinsDown() != 10) && (pe.getThrowNumber() == 2 && !tenthFrameStrike)) {
                     canThrowAgain = false;
                     //publish( lanePublish() );
                 }
@@ -331,7 +330,6 @@ public class Lane extends Thread implements PinsetterObserver {
                 } else if (pe.getThrowNumber() == 3)
                     System.out.println("I'm here...");
             }
-        } else {                                //  this is not a real throw, probably a reset
         }
     }
 
