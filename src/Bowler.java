@@ -17,6 +17,8 @@
  *
  */
 
+import java.util.ArrayList;
+
 /**
  * Class that holds all bowler info
  */
@@ -26,6 +28,7 @@ public class Bowler {
     private String fullName;
     private String nickName;
     private String email;
+    private Frame head;
 
     public Bowler(String nick, String full, String mail) {
         nickName = nick;

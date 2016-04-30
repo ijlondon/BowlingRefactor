@@ -3,28 +3,28 @@
  */
 
 
-class Frame {
+public class Frame {
     int rollNum;
     int frameNum;
     int pinCount;
-}
 
-class Inactive extends Frame {
+    private class Inactive extends Frame {
 
-}
+    }
 
-class Active extends Frame {
+    private class Active extends Frame {
 
-}
+    }
 
-class Spare extends Frame {
+    private class Spare extends Frame {
 
-}
+    }
 
-class Strike extends Frame {
+    private class Strike extends Frame {
 
-}
+    }
 
-class Final extends Frame {
+    private class Tenth extends Frame {
 
+    }
 }
