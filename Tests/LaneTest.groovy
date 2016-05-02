@@ -19,8 +19,6 @@ public class LaneTest extends GroovyTestCase {
         initGame();
 
         int[] curScore;
-        int strikeballs = 0;
-        int totalScore = 0;
         curScore = (int[]) scores.get(Cur);
         for (int i = 0; i != 10; i++){
             cumulScores[bowlIndex][i] = 0;
