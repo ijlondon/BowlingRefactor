@@ -166,7 +166,7 @@ public class Lane extends Thread implements PinsetterObserver {
      * Constructs a new lane and starts its thread
      *
      * @pre none
-     * @post a new lane has been created and its thered is executing
+     * @post a new lane has been created and its thread is executing
      */
     public Lane() {
         setter = new Pinsetter();
@@ -209,7 +209,7 @@ public class Lane extends Thread implements PinsetterObserver {
                     tenthFrameStrike = false;
                     ball = 0;
                     while (canThrowAgain) {
-                        setter.ballThrown();        // simulate the thrower's ball hiting
+                        setter.ballThrown();        // simulate the thrower's ball hitting
                         ball++;
                     }
 
@@ -251,7 +251,7 @@ public class Lane extends Thread implements PinsetterObserver {
                     resetScores();
                     resetBowlerIterator();
 
-                } else if (result == 2) {// no, dont want to play another game
+                } else if (result == 2) {// no, don't want to play another game
                     Vector printVector;
                     EndGameReport egr = new EndGameReport(((Bowler) party.getMembers().get(0)).getNickName() + "'s Party", party);
                     printVector = egr.getResult();
@@ -289,7 +289,7 @@ public class Lane extends Thread implements PinsetterObserver {
     /**
      * recievePinsetterEvent()
      * <p>
-     * recieves the thrown event from the pinsetter
+     * receives the thrown event from the pinsetter
      *
      * @param pe The pinsetter event that has been received.
      * @pre none
@@ -300,7 +300,7 @@ public class Lane extends Thread implements PinsetterObserver {
         if (pe.pinsDownOnThisThrow() >= 0) {            // this is a real throw
             markScore(currentThrower, frameNumber + 1, pe.getThrowNumber(), pe.pinsDownOnThisThrow());
 
-            // next logic handles the ?: what conditions dont allow them another throw?
+            // next logic handles the ?: what conditions don't allow them another throw?
             // handle the case of 10th frame first
             if (frameNumber == 9) {
                 if (pe.totalPinsDown() == 10) {
@@ -385,7 +385,7 @@ public class Lane extends Thread implements PinsetterObserver {
 
         curScores = new int[party.getMembers().size()];
         cumulScores = new int[party.getMembers().size()][10];
-        finalScores = new int[party.getMembers().size()][128]; //Hardcoding a max of 128 games, bite me.
+        finalScores = new int[party.getMembers().size()][128]; //Hardcoding a max of 128 games
         gameNumber = 0;
 
         resetScores();
