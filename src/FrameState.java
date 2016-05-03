@@ -7,45 +7,121 @@
 
 public interface FrameState {
 
-    public void addScore(int addedScore);
+    void setFrame(Frame frame);
 
-    public class Inactive implements FrameState {
+    void addRoll(int pinsKOd, int rollNum);
+
+    boolean canRollAgain();
+
+    class Basic implements FrameState {
+        Frame frame;
+        boolean moreRolls;
+
+        public void setFrame(Frame frame) {
+            this.frame = frame;
+            moreRolls = true;
+        }
+
+        public boolean canRollAgain() {
+            return moreRolls;
+        }
 
         @Override
-        public void addScore(int addedScore) {
+        public void addRoll(int pinsKOd, int rollNum) {
+            frame.pinCount += pinsKOd;
+            frame.score = frame.pinCount;
+            frame.rollNum = rollNum;
 
+            //set number of pins knocked down by first roll
+            if (rollNum == 1) {
+                frame.roll1 = pinsKOd;
+                //change frame's state to strike
+                if (frame.pinCount == 10) frame.setFrameState(new Strike());
+            }
+            //set number of pins knocked down by second roll
+            else if (rollNum == 2) {
+                frame.roll2 = pinsKOd;
+                //change frame's state to spare
+                if (frame.pinCount == 10) frame.setFrameState(new Spare());
+                moreRolls = false;
+            }
         }
     }
 
-    public class Active implements FrameState {
+    class Spare implements FrameState {
+        Frame frame;
+        boolean moreRolls;
+
+        public void setFrame(Frame frame) {
+            this.frame = frame;
+            moreRolls = false;
+        }
+
+        public boolean canRollAgain() {
+            return moreRolls;
+        }
 
         @Override
-        public void addScore(int addedScore) {
-
+        public void addRoll(int pinsKOd, int rollNum) {
+            System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in spare state");
         }
     }
 
-    public class Spare implements FrameState {
+    class Strike implements FrameState {
+        Frame frame;
+        boolean moreRolls;
+
+        public void setFrame(Frame frame) {
+            this.frame = frame;
+            moreRolls = false;
+        }
+
+        public boolean canRollAgain() {
+            return moreRolls;
+        }
 
         @Override
-        public void addScore(int addedScore) {
-
+        public void addRoll(int pinsKOd, int rollNum) {
+            System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in strike state");
         }
     }
 
-    public class Strike implements FrameState {
+    class Tenth implements FrameState {
+        Frame frame;
+        boolean moreRolls;
 
-        @Override
-        public void addScore(int addedScore) {
-
+        public void setFrame(Frame frame) {
+            this.frame = frame;
+            moreRolls = true;
         }
-    }
 
-    public class Tenth implements FrameState {
+        public boolean canRollAgain() {
+            return moreRolls;
+        }
 
-        @Override
-        public void addScore(int addedScore) {
+        public void addRoll(int pinsKOd, int rollNum) {
+            frame.pinCount += pinsKOd;
+            frame.score = frame.pinCount;
+            frame.rollNum = rollNum;
 
+            if (rollNum == 1) {
+                frame.roll1 = pinsKOd;
+            }
+            //set number of pins knocked down by second roll
+            else if (rollNum == 2) {
+                frame.roll2 = pinsKOd;
+                //if spare or strike achieved then allow for third bonus roll
+                if (frame.pinCount >= 10) {
+                    moreRolls = true;
+                } else {
+                    moreRolls = false;
+                }
+            }
+            //set number of pins knocked down by third roll
+            else if (rollNum == 3) {
+                frame.roll3 = pinsKOd;
+                moreRolls = false;
+            }
         }
     }
 }

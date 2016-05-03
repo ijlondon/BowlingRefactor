@@ -6,19 +6,23 @@ public class LaneTest extends GroovyTestCase {
     int numOfBowlers;
     int bowlIndex;
     int[][] cumulScores;
+    Bowler Cur;
+    int frame;
 
     protected void initGame() {
         instance = new Lane();
-        Bowler jon = new Bowler();
+        Bowler Cur = new Bowler();
         numOfBowlers = 1;
         bowlIndex = 1;
-        int[][] cumulScores = int[numOfBowlers][10];
+        cumulScores = int[numOfBowlers][10];
     }
 
     public void testGetScore() {
         initGame();
 
         int[] curScore;
+        int strikeballs = 0;
+        int totalScore = 0;
         curScore = (int[]) scores.get(Cur);
         for (int i = 0; i != 10; i++){
             cumulScores[bowlIndex][i] = 0;

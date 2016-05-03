@@ -8,6 +8,9 @@ public class Frame implements FrameState{
     int rollNum;
     int frameNum;
     int pinCount;
+    int roll1;
+    int roll2;
+    int roll3;
     int score;
     Frame nextFrame;
     FrameState state;
@@ -18,11 +21,18 @@ public class Frame implements FrameState{
         if(frameNum == 10){
             this.setFrameState(new Tenth());
         }
+        rollNum = 0;
+        pinCount = 0;
+        score = 0;
+        roll1 = -1;
+        roll2 = -1;
+        roll3 = -1;
     }
 
     //Set this frame's state to parameter
     public void setFrameState(FrameState state) {
         this.state = state;
+        state.setFrame(this);
     }
 
     //Used to initialize all the frames for that bowler
@@ -33,7 +43,17 @@ public class Frame implements FrameState{
     }
 
     @Override
-    public void addScore(int addedScore) {
+    public void setFrame(Frame frame) {
+        state.setFrame(frame);
+    }
 
+    @Override
+    public void addRoll(int pinsKOd, int rollNum) {
+        this.state.addRoll(pinsKOd, rollNum);
+    }
+
+    @Override
+    public boolean canRollAgain() {
+        return state.canRollAgain();
     }
 }
