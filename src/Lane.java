@@ -159,7 +159,7 @@ public class Lane extends Thread implements PinsetterObserver {
     private int gameNumber;
 
     private Bowler currentThrower;            // = the thrower who just took a throw
-
+    private Frame frame1;
     /**
      * Lane()
      * <p>
@@ -179,6 +179,13 @@ public class Lane extends Thread implements PinsetterObserver {
         gameNumber = 0;
 
         setter.subscribe(this);
+
+        //instantiate the first frame
+        frame1 = new Frame(1);
+        //loop through and add the remaining 9 frames to the chain
+        for(int i = 2; i <= 10; i++){
+            frame1.add(new Frame(i));
+        }
 
         this.start();
     }
