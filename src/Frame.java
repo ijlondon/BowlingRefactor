@@ -20,6 +20,8 @@ public class Frame implements FrameState{
         this.frameNum = frameNum;
         if(frameNum == 10){
             this.setFrameState(new Tenth());
+        } else {
+            this.setFrameState(new Basic());
         }
         rollNum = 0;
         pinCount = 0;
