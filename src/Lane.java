@@ -203,12 +203,8 @@ public class Lane extends Thread implements PinsetterObserver {
      * entry point for execution of this lane
      */
     public void run() {
-        //early return for no party on this lane
-        if(!partyAssigned)
-            return;
-
         while (true) {
-            if (!gameFinished) {    // we have a party on this lane,
+            if (partyAssigned && !gameFinished) {    // we have a party on this lane,
                 // so next bowler can take a throw
 
                 while (gameIsHalted) {
@@ -250,7 +246,7 @@ public class Lane extends Thread implements PinsetterObserver {
                         gameNumber++;
                     }
                 }
-            } else {
+            } else if (partyAssigned && gameFinished){
                 EndGamePrompt egp = new EndGamePrompt(((Bowler) party.getMembers().get(0)).getNickName() + "'s Party");
                 int result = egp.getResult();
                 egp.distroy();
