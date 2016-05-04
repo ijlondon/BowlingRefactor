@@ -9,7 +9,7 @@ public interface FrameState {
 
     void setFrame(Frame frame);
 
-    void addRoll(PinsetterEvent pe);
+    FrameStatus addRoll(PinsetterEvent pe);
 
     boolean canRollAgain();
 
@@ -27,7 +27,7 @@ public interface FrameState {
         }
 
         @Override
-        public void addRoll(PinsetterEvent pe) {
+        public FrameStatus addRoll(PinsetterEvent pe) {
             int pinsKOd = pe.pinsDownOnThisThrow();
             int rollNum = pe.getThrowNumber();
             frame.pinCount += pinsKOd;
@@ -47,8 +47,9 @@ public interface FrameState {
                 if (frame.pinCount == 10) frame.setFrameState(new Spare());
                 moreRolls = false;
             }
-
+            return FrameStatus.SUCCESS;
         }
+
     }
 
     class Spare implements FrameState {
@@ -65,9 +66,11 @@ public interface FrameState {
         }
 
         @Override
-        public void addRoll(PinsetterEvent pe) {
+        public FrameStatus addRoll(PinsetterEvent pe) {
             System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in spare state");
+            return FrameStatus.SUCCESS;
         }
+
     }
 
     class Strike implements FrameState {
@@ -84,8 +87,9 @@ public interface FrameState {
         }
 
         @Override
-        public void addRoll(PinsetterEvent pe) {
+        public FrameStatus addRoll(PinsetterEvent pe) {
             System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in strike state");
+            return FrameStatus.SUCCESS;
         }
     }
 
@@ -102,7 +106,7 @@ public interface FrameState {
             return moreRolls;
         }
 
-        public void addRoll(PinsetterEvent pe) {
+        public FrameStatus addRoll(PinsetterEvent pe) {
             int pinsKOd = pe.pinsDownOnThisThrow();
             int rollNum = pe.getThrowNumber();
 
@@ -129,6 +133,10 @@ public interface FrameState {
                 moreRolls = false;
             }
 
+            if (pe.totalPinsDown() == 10) {
+                return FrameStatus.RESET_PINS;
+            }
+            return FrameStatus.SUCCESS;
         }
     }
 }

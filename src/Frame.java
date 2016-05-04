@@ -48,8 +48,8 @@ public class Frame implements FrameState{
     }
 
     @Override
-    public void addRoll(PinsetterEvent pe) {
-
+    public FrameStatus addRoll(PinsetterEvent pe) {
+        return FrameStatus.SUCCESS;
     }
 
     @Override
