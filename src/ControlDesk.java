@@ -53,13 +53,16 @@ class ControlDesk extends Thread {
     private HashSet lanes;
 
     /** The party wait queue */
-    private Queue partyQueue;
+    private Queue<Party> partyQueue;
 
     /** The number of lanes represented */
     private int numLanes;
 
     /** The collection of subscribers */
     private Vector subscribers;
+    
+    /** "Ticket stub" signifying place in line for a lane **/
+    private int posInLine = 0;
 
     /**
      * Constructor for the ControlDesk class
@@ -134,11 +137,12 @@ class ControlDesk extends Thread {
     public void assignLane() {
         Iterator it = lanes.iterator();
 
-        while (it.hasNext() && !partyQueue.isEmpty()) {
+        while (it.hasNext() && partyQueue.iterator().hasNext()) {
             Lane curLane = (Lane) it.next();
 
-            if (curLane.isPartyAssigned() == false) {
+            if (curLane.isPartyAssigned() == false && !partyQueue.iterator().next().getAssigned()) {
                 System.out.println("ok... assigning this party");
+                partyQueue.iterator().next().setAssigned(true);
                 curLane.assignParty(((Party) partyQueue.iterator().next()));
             }
         }
@@ -166,7 +170,9 @@ class ControlDesk extends Thread {
             partyBowlers.add(newBowler);
         }
         Party newParty = new Party(partyBowlers);
+        newParty.setPos(posInLine);
         partyQueue.add(newParty);
+        posInLine++;
         publish(new ControlDeskEvent(getPartyQueue()));
     }
 
@@ -179,9 +185,9 @@ class ControlDesk extends Thread {
 
     public Vector getPartyQueue() {
         Vector displayPartyQueue = new Vector();
-        for (int i = 0; i < partyQueue.size(); i++) {
+        for (Party o : partyQueue) {
             String nextParty =
-                    ((Bowler) ((Vector) ((Party) partyQueue.toArray()[i]).getMembers())
+                    ((Bowler) ((Vector) o.getMembers())
                             .get(0))
                             .getNickName() + "'s Party";
             displayPartyQueue.addElement(nextParty);
