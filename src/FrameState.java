@@ -11,6 +11,8 @@ public interface FrameState {
 
     void addRoll(PinsetterEvent pe);
 
+    int getScore();
+
     boolean canRollAgain();
 
     class Basic implements FrameState {
@@ -49,6 +51,12 @@ public interface FrameState {
             }
 
         }
+
+        @Override
+        public int getScore(){
+            frame.score = frame.pinCount;
+            return frame.score;
+        }
     }
 
     class Spare implements FrameState {
@@ -68,6 +76,15 @@ public interface FrameState {
         public void addRoll(PinsetterEvent pe) {
             System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in spare state");
         }
+
+        @Override
+        public int getScore(){
+            if(frame.nextFrame.roll1 != -1) {
+                frame.score = frame.pinCount + frame.nextFrame.roll1;
+            }
+            return frame.score;
+        }
+
     }
 
     class Strike implements FrameState {
@@ -86,6 +103,19 @@ public interface FrameState {
         @Override
         public void addRoll(PinsetterEvent pe) {
             System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in strike state");
+        }
+
+        @Override
+        public int getScore(){
+            if(frame.nextFrame.roll1 != -1 ) {
+                frame.score = frame.pinCount + frame.nextFrame.roll1;
+            }
+                if(frame.nextFrame.state instanceof Strike){
+                    if(frame.nextFrame.nextFrame.roll1 != -1 ) {
+                        frame.score += frame.nextFrame.nextFrame.roll1;
+                    }
+                }
+            return frame.score;
         }
     }
 
@@ -129,6 +159,11 @@ public interface FrameState {
                 moreRolls = false;
             }
 
+        }
+
+        @Override
+        public int getScore(){
+            return 0; //fill in
         }
     }
 }

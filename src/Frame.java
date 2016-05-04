@@ -56,4 +56,7 @@ public class Frame implements FrameState{
     public boolean canRollAgain() {
         return state.canRollAgain();
     }
+
+    @Override
+    public int getScore(){ return state.getScore(); }
 }
