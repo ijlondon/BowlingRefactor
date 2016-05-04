@@ -43,6 +43,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Vector;
 
 class ControlDesk extends Thread {
@@ -69,7 +71,7 @@ class ControlDesk extends Thread {
     public ControlDesk(int numLanes) {
         this.numLanes = numLanes;
         lanes = new HashSet(numLanes);
-        partyQueue = new Queue();
+        partyQueue = new PriorityQueue();
 
         subscribers = new Vector();
 
@@ -132,12 +134,12 @@ class ControlDesk extends Thread {
     public void assignLane() {
         Iterator it = lanes.iterator();
 
-        while (it.hasNext() && partyQueue.hasMoreElements()) {
+        while (it.hasNext() && !partyQueue.isEmpty()) {
             Lane curLane = (Lane) it.next();
 
             if (curLane.isPartyAssigned() == false) {
                 System.out.println("ok... assigning this party");
-                curLane.assignParty(((Party) partyQueue.next()));
+                curLane.assignParty(((Party) partyQueue.iterator().next()));
             }
         }
         publish(new ControlDeskEvent(getPartyQueue()));
@@ -177,9 +179,9 @@ class ControlDesk extends Thread {
 
     public Vector getPartyQueue() {
         Vector displayPartyQueue = new Vector();
-        for (int i = 0; i < ((Vector) partyQueue.asVector()).size(); i++) {
+        for (int i = 0; i < partyQueue.size(); i++) {
             String nextParty =
-                    ((Bowler) ((Vector) ((Party) partyQueue.asVector().get(i)).getMembers())
+                    ((Bowler) ((Vector) ((Party) partyQueue.toArray()[i]).getMembers())
                             .get(0))
                             .getNickName() + "'s Party";
             displayPartyQueue.addElement(nextParty);
