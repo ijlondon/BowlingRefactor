@@ -6,7 +6,9 @@
 
 
 public interface FrameState {
-
+    public enum FrameStatus {
+        RESET_PINS, SUCCESS
+    }
     void setFrame(Frame frame);
 
     FrameStatus addRoll(PinsetterEvent pe);
