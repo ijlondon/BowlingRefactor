@@ -48,8 +48,8 @@ public class Frame implements FrameState{
     }
 
     @Override
-    public void addRoll(int pinsKOd, int rollNum) {
-        this.state.addRoll(pinsKOd, rollNum);
+    public void addRoll(PinsetterEvent pe) {
+
     }
 
     @Override

@@ -160,6 +160,7 @@ public class Lane extends Thread implements PinsetterObserver {
 
     private Bowler currentThrower;            // = the thrower who just took a throw
     private Frame frame1;
+
     /**
      * Lane()
      * <p>
@@ -190,24 +191,29 @@ public class Lane extends Thread implements PinsetterObserver {
         this.start();
     }
 
+    void wait(int millis){
+        try {
+            sleep(millis);
+        } catch (Exception e) {}
+    }
+
     /**
      * run()
      * <p>
      * entry point for execution of this lane
      */
     public void run() {
+        //early return for no party on this lane
+        if(!partyAssigned)
+            return;
 
         while (true) {
-            if (partyAssigned && !gameFinished) {    // we have a party on this lane,
+            if (!gameFinished) {    // we have a party on this lane,
                 // so next bowler can take a throw
 
                 while (gameIsHalted) {
-                    try {
-                        sleep(10);
-                    } catch (Exception e) {
-                    }
+                    wait(10);
                 }
-
 
                 if (bowlerIterator.hasNext()) {
                     currentThrower = (Bowler) bowlerIterator.next();
@@ -244,20 +250,16 @@ public class Lane extends Thread implements PinsetterObserver {
                         gameNumber++;
                     }
                 }
-            } else if (partyAssigned && gameFinished) {
+            } else {
                 EndGamePrompt egp = new EndGamePrompt(((Bowler) party.getMembers().get(0)).getNickName() + "'s Party");
                 int result = egp.getResult();
                 egp.distroy();
-                egp = null;
 
-
-                System.out.println("result was: " + result);
 
                 // TODO: send record of scores to control desk
                 if (result == 1) {                    // yes, want to play again
                     resetScores();
                     resetBowlerIterator();
-
                 } else if (result == 2) {// no, don't want to play another game
                     Vector printVector;
                     EndGameReport egr = new EndGameReport(((Bowler) party.getMembers().get(0)).getNickName() + "'s Party", party);
@@ -265,7 +267,6 @@ public class Lane extends Thread implements PinsetterObserver {
                     partyAssigned = false;
                     Iterator scoreIt = party.getMembers().iterator();
                     party = null;
-                    partyAssigned = false;
 
                     publish(lanePublish());
 
@@ -275,8 +276,7 @@ public class Lane extends Thread implements PinsetterObserver {
                         ScoreReport sr = new ScoreReport(thisBowler, finalScores[myIndex++], gameNumber);
                         sr.sendEmail(thisBowler.getEmail());
                         for (Object aPrintVector : printVector) {
-                            if (thisBowler.getNick().equals((String) aPrintVector)) {
-                                System.out.println("Printing " + thisBowler.getNick());
+                            if (thisBowler.getNick().equals(aPrintVector)) {
                                 sr.sendPrintout();
                             }
                         }
@@ -284,17 +284,12 @@ public class Lane extends Thread implements PinsetterObserver {
                     }
                 }
             }
-
-
-            try {
-                sleep(10);
-            } catch (Exception e) {
-            }
+            wait(10);
         }
     }
 
     /**
-     * recievePinsetterEvent()
+     * receivePinsetterEvent()
      * <p>
      * receives the thrown event from the pinsetter
      *
@@ -303,41 +298,40 @@ public class Lane extends Thread implements PinsetterObserver {
      * @post the event has been acted upon if desiered
      */
     public void receivePinsetterEvent(PinsetterEvent pe) {
+        if (pe.pinsDownOnThisThrow() < 0) {
+            // this is not a real throw
+            return;
+        }
 
-        if (pe.pinsDownOnThisThrow() >= 0) {            // this is a real throw
-            markScore(currentThrower, frameNumber + 1, pe.getThrowNumber(), pe.pinsDownOnThisThrow());
+        markScore(currentThrower, frameNumber + 1, pe.getThrowNumber(), pe.pinsDownOnThisThrow());
 
-            // next logic handles the ?: what conditions don't allow them another throw?
-            // handle the case of 10th frame first
-            if (frameNumber == 9) {
-                if (pe.totalPinsDown() == 10) {
-                    setter.resetPins();
-                    if (pe.getThrowNumber() == 1) {
-                        tenthFrameStrike = true;
-                    }
+        // next logic handles the ?: what conditions don't allow them another throw?
+        // handle the case of 10th frame first
+        if (frameNumber == 9) {
+            if (pe.totalPinsDown() == 10) {
+                setter.resetPins();
+                if (pe.getThrowNumber() == 1) {
+                    tenthFrameStrike = true;
                 }
+            }
 
-                if ((pe.totalPinsDown() != 10) && (pe.getThrowNumber() == 2 && !tenthFrameStrike)) {
-                    canThrowAgain = false;
-                    //publish( lanePublish() );
-                }
+            if ((pe.totalPinsDown() != 10) && (pe.getThrowNumber() == 2 && !tenthFrameStrike)) {
+                canThrowAgain = false;
+            }
 
-                if (pe.getThrowNumber() == 3) {
-                    canThrowAgain = false;
-                    //publish( lanePublish() );
-                }
-            } else { // its not the 10th frame
+            if (pe.getThrowNumber() == 3) {
+                canThrowAgain = false;
+            }
+        } else { // its not the 10th frame
 
-                if (pe.pinsDownOnThisThrow() == 10) {        // threw a strike
-                    canThrowAgain = false;
-                    //publish( lanePublish() );
-                } else if (pe.getThrowNumber() == 2) {
-                    canThrowAgain = false;
-                    //publish( lanePublish() );
-                } else if (pe.getThrowNumber() == 3)
-                    System.out.println("I'm here...");
+            if (pe.pinsDownOnThisThrow() == 10) {        // threw a strike
+                canThrowAgain = false;
+            } else if (pe.getThrowNumber() == 2) {
+                canThrowAgain = false;
             }
         }
+
+        frame1.addRoll(pe);
     }
 
     /**
@@ -409,11 +403,8 @@ public class Lane extends Thread implements PinsetterObserver {
      * @param score The bowler's score
      */
     private void markScore(Bowler Cur, int frame, int ball, int score) {
-        int[] curScore;
+        int[] curScore = (int[]) scores.get(Cur);
         int index = ((frame - 1) * 2 + ball);
-
-        curScore = (int[]) scores.get(Cur);
-
 
         curScore[index - 1] = score;
         scores.put(Cur, curScore);

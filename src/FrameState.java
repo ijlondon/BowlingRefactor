@@ -9,7 +9,7 @@ public interface FrameState {
 
     void setFrame(Frame frame);
 
-    void addRoll(int pinsKOd, int rollNum);
+    void addRoll(PinsetterEvent pe);
 
     boolean canRollAgain();
 
@@ -27,7 +27,9 @@ public interface FrameState {
         }
 
         @Override
-        public void addRoll(int pinsKOd, int rollNum) {
+        public void addRoll(PinsetterEvent pe) {
+            int pinsKOd = pe.pinsDownOnThisThrow();
+            int rollNum = pe.getThrowNumber();
             frame.pinCount += pinsKOd;
             frame.score = frame.pinCount;
             frame.rollNum = rollNum;
@@ -45,6 +47,7 @@ public interface FrameState {
                 if (frame.pinCount == 10) frame.setFrameState(new Spare());
                 moreRolls = false;
             }
+
         }
     }
 
@@ -62,7 +65,7 @@ public interface FrameState {
         }
 
         @Override
-        public void addRoll(int pinsKOd, int rollNum) {
+        public void addRoll(PinsetterEvent pe) {
             System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in spare state");
         }
     }
@@ -81,7 +84,7 @@ public interface FrameState {
         }
 
         @Override
-        public void addRoll(int pinsKOd, int rollNum) {
+        public void addRoll(PinsetterEvent pe) {
             System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in strike state");
         }
     }
@@ -99,7 +102,10 @@ public interface FrameState {
             return moreRolls;
         }
 
-        public void addRoll(int pinsKOd, int rollNum) {
+        public void addRoll(PinsetterEvent pe) {
+            int pinsKOd = pe.pinsDownOnThisThrow();
+            int rollNum = pe.getThrowNumber();
+
             frame.pinCount += pinsKOd;
             frame.score = frame.pinCount;
             frame.rollNum = rollNum;
@@ -122,6 +128,7 @@ public interface FrameState {
                 frame.roll3 = pinsKOd;
                 moreRolls = false;
             }
+
         }
     }
 }
