@@ -137,13 +137,16 @@ class ControlDesk extends Thread {
     public void assignLane() {
         Iterator it = lanes.iterator();
 
-        while (it.hasNext() && partyQueue.iterator().hasNext()) {
+        while (it.hasNext() && !partyQueue.isEmpty()) {
             Lane curLane = (Lane) it.next();
 
-            if (curLane.isPartyAssigned() == false && !partyQueue.iterator().next().getAssigned()) {
-                System.out.println("ok... assigning this party");
-                partyQueue.iterator().next().setAssigned(true);
-                curLane.assignParty(((Party) partyQueue.iterator().next()));
+            if (!curLane.isPartyAssigned()) {
+            	Party p = partyQueue.poll();
+            	if(!p.getAssigned()) {
+	                System.out.println("ok... assigning this party");
+	                p.setAssigned(true);
+	                curLane.assignParty(p);
+            	}
             }
         }
         publish(new ControlDeskEvent(getPartyQueue()));

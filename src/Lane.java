@@ -378,7 +378,7 @@ public class Lane extends Thread implements PinsetterObserver {
     public void assignParty(Party theParty) {
         party = theParty;
         resetBowlerIterator();
-        partyAssigned = true;
+        this.partyAssigned = true;
 
         curScores = new int[party.getMembers().size()];
         cumulScores = new int[party.getMembers().size()][10];

@@ -61,6 +61,10 @@ public class Party implements Comparable<Party>{
 	public void setPos(int pos) {
 		posInLine = pos;
 	}
+	
+	public int getPos() {
+		return posInLine;
+	}
 
 	@Override
 	public int compareTo(Party arg0) {
