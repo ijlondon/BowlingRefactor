@@ -247,6 +247,7 @@ public class Lane extends Thread implements PinsetterObserver {
                     }
                 }
             } else if (partyAssigned && gameFinished){
+                System.out.println("Frame's Final Score: " + frame1.getScore());
                 EndGamePrompt egp = new EndGamePrompt(((Bowler) party.getMembers().get(0)).getNickName() + "'s Party");
                 int result = egp.getResult();
                 egp.distroy();
@@ -270,7 +271,7 @@ public class Lane extends Thread implements PinsetterObserver {
                     while (scoreIt.hasNext()) {
                         Bowler thisBowler = (Bowler) scoreIt.next();
                         ScoreReport sr = new ScoreReport(thisBowler, finalScores[myIndex++], gameNumber);
-                        sr.sendEmail(thisBowler.getEmail());
+                        //sr.sendEmail(thisBowler.getEmail());
                         for (Object aPrintVector : printVector) {
                             if (thisBowler.getNick().equals(aPrintVector)) {
                                 sr.sendPrintout();
@@ -298,7 +299,6 @@ public class Lane extends Thread implements PinsetterObserver {
             // this is not a real throw
             return;
         }
-
         markScore(currentThrower, frameNumber + 1, pe.getThrowNumber(), pe.pinsDownOnThisThrow());
 
         // next logic handles the ?: what conditions don't allow them another throw?
@@ -433,6 +433,7 @@ public class Lane extends Thread implements PinsetterObserver {
         int[] curScore;
         int strikeballs = 0;
         int totalScore = 0;
+        //System.out.println("Current Score: " + frame1.getScore());
         curScore = (int[]) scores.get(Cur);
         for (int i = 0; i != 10; i++) {
             cumulScores[bowlIndex][i] = 0;
