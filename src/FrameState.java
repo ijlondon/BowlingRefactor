@@ -13,9 +13,10 @@ public interface FrameState {
 
     FrameStatus addRoll(PinsetterEvent pe);
 
-    int getScore();
+    public int[] getScore(int[] scores);
 
     boolean canRollAgain();
+
 
     class Basic implements FrameState {
         Frame frame;
@@ -62,9 +63,13 @@ public interface FrameState {
 
 
         @Override
-        public int getScore(){
-            return frame.score + frame.nextFrame.getScore();
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
+            }
+            return frame.nextFrame.getScore(scores);
         }
+
 
     }
 
@@ -92,8 +97,11 @@ public interface FrameState {
         }
 
         @Override
-        public int getScore(){
-            return frame.score + frame.nextFrame.getScore();
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
+            }
+            return frame.nextFrame.getScore(scores);
         }
 
 
@@ -126,8 +134,11 @@ public interface FrameState {
         }
 
         @Override
-        public int getScore(){
-            return frame.score + frame.nextFrame.getScore();
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
+            }
+            return frame.nextFrame.getScore(scores);
         }
     }
 
@@ -147,7 +158,6 @@ public interface FrameState {
         public FrameStatus addRoll(PinsetterEvent pe) {
             int pinsKOd = pe.pinsDownOnThisThrow();
             int rollNum = pe.getThrowNumber();
-
             frame.pinCount += pinsKOd;
             frame.score = frame.pinCount;
             frame.rollNum = rollNum;
@@ -184,8 +194,11 @@ public interface FrameState {
         }
 
         @Override
-        public int getScore(){
-            return frame.score;
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
+            }
+            return scores;
         }
     }
 }

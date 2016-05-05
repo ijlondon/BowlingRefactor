@@ -60,5 +60,7 @@ public class Frame implements FrameState{
     }
 
     @Override
-    public int getScore(){ return state.getScore(); }
+    public int[] getScore(int[] scores){
+        return state.getScore(scores);
+    }
 }
