@@ -62,6 +62,7 @@ public class Party implements Comparable<Party>{
 		posInLine = pos;
 	}
 	
+	
 	public int getPos() {
 		return posInLine;
 	}
