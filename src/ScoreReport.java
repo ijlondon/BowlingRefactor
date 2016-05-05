@@ -55,7 +55,7 @@ public class ScoreReport {
 
     public void sendEmail(String recipient) {
         try {
-            Socket s = new Socket("osfmail.rit.edu", 25);
+            Socket s = new Socket("smtp-server.rit.edu", 25);
             BufferedReader in =
                     new BufferedReader(
                             new InputStreamReader(s.getInputStream(), "8859_1"));

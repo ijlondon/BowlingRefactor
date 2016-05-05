@@ -17,8 +17,6 @@
  *
  */
 
-import java.util.ArrayList;
-
 /**
  * Class that holds all bowler info
  */
@@ -34,8 +32,17 @@ public class Bowler {
         nickName = nick;
         fullName = full;
         email = mail;
+        makeFrames();
     }
 
+    public void makeFrames() {
+        //instantiate the first frame
+        head = new Frame(1);
+        //loop through and add the remaining 9 frames to the chain
+        for(int i = 2; i <= 10; i++){
+            head.add(new Frame(i));
+        }
+    }
 
     public String getNickName() {
 
@@ -54,6 +61,8 @@ public class Bowler {
     public String getEmail() {
         return email;
     }
+
+    public Frame getHead() { return head; }
 
     public boolean equals(Bowler b) {
         boolean retval = true;

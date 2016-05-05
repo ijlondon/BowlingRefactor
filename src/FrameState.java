@@ -13,9 +13,10 @@ public interface FrameState {
 
     FrameStatus addRoll(PinsetterEvent pe);
 
-    int getScore();
+    public int[] getScore(int[] scores);
 
     boolean canRollAgain();
+
 
     class Basic implements FrameState {
         Frame frame;
@@ -33,33 +34,42 @@ public interface FrameState {
         @Override
         public FrameStatus addRoll(PinsetterEvent pe) {
             int pinsKOd = pe.pinsDownOnThisThrow();
-            int rollNum = pe.getThrowNumber();
-            frame.pinCount += pinsKOd;
-            frame.score = frame.pinCount;
-            frame.rollNum = rollNum;
-
+            //System.out.println("Basic current score(" + frame.frameNum + "): " + frame.score);
             //set number of pins knocked down by first roll
-            if (rollNum == 1) {
+            if (frame.roll1 == -1 && pe.getThrowNumber() == 1) {
                 frame.roll1 = pinsKOd;
+                frame.pinCount += pinsKOd;
+                frame.score = frame.pinCount;
+                frame.rollNum = pe.getThrowNumber();
                 //change frame's state to strike
-                if (frame.pinCount == 10) frame.setFrameState(new Strike());
-            }
-            //set number of pins knocked down by second roll
-            else if (rollNum == 2) {
+                if (frame.pinCount == 10) {
+                    frame.setFrameState(new Strike());
+                }
+            } else if (frame.roll2 == -1 && pe.getThrowNumber() == 2) {
                 frame.roll2 = pinsKOd;
+                frame.pinCount += pinsKOd;
+                frame.score += pe.pinsDownOnThisThrow();
+                frame.rollNum = pe.getThrowNumber();
                 //change frame's state to spare
-                if (frame.pinCount == 10) frame.setFrameState(new Spare());
+                if (frame.pinCount == 10) {
+                    frame.setFrameState(new Spare());
+                }
                 moreRolls = false;
+            } else {
+                return frame.nextFrame.addRoll(pe);
             }
             return FrameStatus.SUCCESS;
         }
 
 
         @Override
-        public int getScore(){
-            frame.score = frame.pinCount;
-            return frame.score;
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
+            }
+            return frame.nextFrame.getScore(scores);
         }
+
 
     }
 
@@ -78,16 +88,20 @@ public interface FrameState {
 
         @Override
         public FrameStatus addRoll(PinsetterEvent pe) {
-            System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in spare state");
-            return FrameStatus.SUCCESS;
+            if (frame.roll3 == -1) {
+                frame.roll3 = pe.pinsDownOnThisThrow();
+                frame.score += pe.pinsDownOnThisThrow();
+            }
+            //System.out.println("Spare current score(" + frame.frameNum + "): " + frame.score);
+            return frame.nextFrame.addRoll(pe);
         }
 
         @Override
-        public int getScore(){
-            if(frame.nextFrame.roll1 != -1) {
-                frame.score = frame.pinCount + frame.nextFrame.roll1;
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
             }
-            return frame.score;
+            return frame.nextFrame.getScore(scores);
         }
 
 
@@ -108,21 +122,23 @@ public interface FrameState {
 
         @Override
         public FrameStatus addRoll(PinsetterEvent pe) {
-            System.out.println("UH OH! addRoll called on " + frame.frameNum + "th frame in strike state");
-            return FrameStatus.SUCCESS;
+            if (frame.roll2 == -1) {
+                frame.roll2 = pe.pinsDownOnThisThrow();
+                frame.score += frame.roll2;
+            } else if (frame.roll3 == -1) {
+                frame.roll3 = pe.pinsDownOnThisThrow();
+                frame.score += frame.roll3;
+            }
+            //System.out.println("Strike current score(" + frame.frameNum + "): " + frame.score);
+            return frame.nextFrame.addRoll(pe);
         }
 
         @Override
-        public int getScore(){
-            if(frame.nextFrame.roll1 != -1 ) {
-                frame.score = frame.pinCount + frame.nextFrame.roll1;
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
             }
-                if(frame.nextFrame.state instanceof Strike){
-                    if(frame.nextFrame.nextFrame.roll1 != -1 ) {
-                        frame.score += frame.nextFrame.nextFrame.roll1;
-                    }
-                }
-            return frame.score;
+            return frame.nextFrame.getScore(scores);
         }
     }
 
@@ -142,22 +158,24 @@ public interface FrameState {
         public FrameStatus addRoll(PinsetterEvent pe) {
             int pinsKOd = pe.pinsDownOnThisThrow();
             int rollNum = pe.getThrowNumber();
-
             frame.pinCount += pinsKOd;
             frame.score = frame.pinCount;
             frame.rollNum = rollNum;
-
+            boolean noAdd = true;
             if (rollNum == 1) {
+                noAdd = false;
                 frame.roll1 = pinsKOd;
             }
-            //set number of pins knocked down by second roll
             else if (rollNum == 2) {
                 frame.roll2 = pinsKOd;
-                //if spare or strike achieved then allow for third bonus roll
+                if (frame.pinCount == 10) {
+                    noAdd = false;
+                }
                 if (frame.pinCount >= 10) {
                     moreRolls = true;
                 } else {
                     moreRolls = false;
+                    noAdd = false;
                 }
             }
             //set number of pins knocked down by third roll
@@ -165,16 +183,22 @@ public interface FrameState {
                 frame.roll3 = pinsKOd;
                 moreRolls = false;
             }
-
-            if (pe.totalPinsDown() == 10) {
+            if (noAdd && frame.pinCount > 10) {
+                frame.score += pe.pinsDownOnThisThrow();
+            }
+            //System.out.println("Tenth current score(" + frame.frameNum + "): " + frame.score);
+            if (pe.totalPinsDown() == 10 || pe.totalPinsDown() == 20) {
                 return FrameStatus.RESET_PINS;
             }
             return FrameStatus.SUCCESS;
         }
 
         @Override
-        public int getScore(){
-            return 0; //fill in
+        public int[] getScore(int[] scores){
+            for (int i = frame.frameNum - 1; i < 10; i++) {
+                scores[i] += frame.score;
+            }
+            return scores;
         }
     }
 }
