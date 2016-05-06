@@ -217,14 +217,12 @@ public class Lane extends Thread implements PinsetterObserver {
                         finalScores[bowlIndex][gameNumber] = cumulScores[bowlIndex][9];
                         try {
                             Date date = new Date();
-                            String dateString = "" + date.getHours() + ":" + date.getMinutes() + " " + date.getMonth() + "/" + date.getDay() + "/" + (date.getYear() + 1900);
+                            String dateString = date.toString();
                             ScoreHistoryFile.addScore(currentThrower.getNick(), dateString, Integer.toString(cumulScores[bowlIndex][9]));
                         } catch (Exception e) {
                             System.err.println("Exception in addScore. " + e);
                         }
                     }
-
-
                     setter.reset();
                     bowlIndex++;
 
@@ -241,7 +239,6 @@ public class Lane extends Thread implements PinsetterObserver {
                 EndGamePrompt egp = new EndGamePrompt(((Bowler) party.getMembers().get(0)).getNickName() + "'s Party");
                 int result = egp.getResult();
                 egp.distroy();
-
 
                 // TODO: send record of scores to control desk
                 if (result == 1) {                    // yes, want to play again
@@ -267,7 +264,6 @@ public class Lane extends Thread implements PinsetterObserver {
                                 sr.sendPrintout();
                             }
                         }
-
                     }
                 }
             }
@@ -407,15 +403,6 @@ public class Lane extends Thread implements PinsetterObserver {
      */
     public boolean isPartyAssigned() {
         return partyAssigned;
-    }
-
-    /**
-     * isGameFinished
-     *
-     * @return true if the game is done, false otherwise
-     */
-    public boolean isGameFinished() {
-        return gameFinished;
     }
 
     /**

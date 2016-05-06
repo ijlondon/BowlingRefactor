@@ -97,16 +97,6 @@ public class EndGameReport implements ActionListener, ListSelectionListener {
 
     }
 
-    public static void main(String args[]) {
-        Vector bowlers = new Vector();
-        for (int i = 0; i < 4; i++) {
-            bowlers.add(new Bowler("aaaaa", "aaaaa", "aaaaa"));
-        }
-        Party party = new Party(bowlers);
-        String partyName = "wank";
-        EndGameReport e = new EndGameReport(partyName, party);
-    }
-
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(printButton)) {
             //Add selected to the vector.

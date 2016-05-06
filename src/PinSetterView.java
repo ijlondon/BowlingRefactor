@@ -165,14 +165,8 @@ public class PinSetterView implements PinsetterObserver {
         cpanel.add(pins, BorderLayout.CENTER);
 
         frame.pack();
-
-
-//	frame.show();
     }
 
-    public static void main(String args[]) {
-        PinSetterView pg = new PinSetterView(1);
-    }
 
     /**
      * This method receives a pinsetter event.  The event is the current
