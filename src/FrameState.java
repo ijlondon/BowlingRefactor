@@ -58,9 +58,6 @@ public interface FrameState {
 
     }
 
-    /**
-     * NeedRoll signifies a Basic frame that needs a second roll.
-     */
     class NeedRoll implements FrameState {
         Frame frame;
 
@@ -209,30 +206,21 @@ public interface FrameState {
             frame.pinCount += pinsKOd;
             frame.score = frame.pinCount;
             frame.rollNum = rollNum;
-            boolean noAdd = true;
             if (rollNum == 1) {
-                noAdd = false;
                 frame.roll1 = pinsKOd;
             }
             else if (rollNum == 2) {
                 frame.roll2 = pinsKOd;
-                if (frame.pinCount == 10) {
-                    noAdd = false;
-                }
                 if (frame.pinCount >= 10) {
                     moreRolls = true;
                 } else {
                     moreRolls = false;
-                    noAdd = false;
                 }
             }
             //set number of pins knocked down by third roll
             else if (rollNum == 3) {
                 frame.roll3 = pinsKOd;
                 moreRolls = false;
-            }
-            if (noAdd && frame.pinCount > 10) {
-                frame.score += pe.pinsDownOnThisThrow();
             }
             if (pe.totalPinsDown() == 10 || pe.totalPinsDown() == 20) {
                 return FrameStatus.RESET_PINS;

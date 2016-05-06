@@ -258,7 +258,7 @@ public class Lane extends Thread implements PinsetterObserver {
                     while (scoreIt.hasNext()) {
                         Bowler thisBowler = (Bowler) scoreIt.next();
                         ScoreReport sr = new ScoreReport(thisBowler, finalScores[myIndex++], gameNumber);
-                        sr.sendEmail(thisBowler.getEmail());
+                        //sr.sendEmail(thisBowler.getEmail());
                         for (Object aPrintVector : printVector) {
                             if (thisBowler.getNick().equals(aPrintVector)) {
                                 sr.sendPrintout();
@@ -285,7 +285,10 @@ public class Lane extends Thread implements PinsetterObserver {
             // this is not a real throw
             return;
         }
-        currentThrower.getHead().addRoll(pe);
+        FrameState.FrameStatus status = currentThrower.getHead().addRoll(pe);
+        if (status == FrameState.FrameStatus.RESET_PINS) {
+            setter.resetPins();
+        }
         canThrowAgain = currentThrower.getHead().canRollAgain();
         markScore(currentThrower, frameNumber + 1, pe.getThrowNumber(), pe.pinsDownOnThisThrow());
     }
