@@ -41,11 +41,7 @@
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Vector;
+import java.util.*;
 
 class ControlDesk extends Thread {
 
@@ -154,13 +150,6 @@ class ControlDesk extends Thread {
     }
 
     /**
-     */
-
-    public void viewScores(Lane ln) {
-        // TODO: attach a LaneScoreView object to that lane
-    }
-
-    /**
      * Creates a party from a Vector of nickNAmes and adds them to the wait queue.
      *
      * @param partyNicks    A Vector of NickNames
@@ -232,10 +221,7 @@ class ControlDesk extends Thread {
         Iterator eventIterator = subscribers.iterator();
         while (eventIterator.hasNext()) {
             (
-                    (ControlDeskObserver) eventIterator
-                            .next())
-                    .receiveControlDeskEvent(
-                            event);
+                    (ControlDeskObserver) eventIterator.next()).receiveControlDeskEvent(event);
         }
     }
 

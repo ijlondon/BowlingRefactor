@@ -28,13 +28,15 @@ public interface FrameState {
         }
 
         public boolean canRollAgain() {
-            return moreRolls;
+            if (frame.nextFrame.roll1 == -1) {
+                return moreRolls;
+            }
+            return frame.nextFrame.canRollAgain();
         }
 
         @Override
         public FrameStatus addRoll(PinsetterEvent pe) {
             int pinsKOd = pe.pinsDownOnThisThrow();
-            //System.out.println("Basic current score(" + frame.frameNum + "): " + frame.score);
             //set number of pins knocked down by first roll
             if (frame.roll1 == -1 && pe.getThrowNumber() == 1) {
                 frame.roll1 = pinsKOd;
@@ -83,7 +85,10 @@ public interface FrameState {
         }
 
         public boolean canRollAgain() {
-            return moreRolls;
+            if (frame.nextFrame.roll1 == -1) {
+                return moreRolls;
+            }
+            return frame.nextFrame.canRollAgain();
         }
 
         @Override
@@ -92,7 +97,6 @@ public interface FrameState {
                 frame.roll3 = pe.pinsDownOnThisThrow();
                 frame.score += pe.pinsDownOnThisThrow();
             }
-            //System.out.println("Spare current score(" + frame.frameNum + "): " + frame.score);
             return frame.nextFrame.addRoll(pe);
         }
 
@@ -117,7 +121,10 @@ public interface FrameState {
         }
 
         public boolean canRollAgain() {
-            return moreRolls;
+            if (frame.nextFrame.roll1 == -1) {
+                return moreRolls;
+            }
+            return frame.nextFrame.canRollAgain();
         }
 
         @Override
@@ -129,7 +136,6 @@ public interface FrameState {
                 frame.roll3 = pe.pinsDownOnThisThrow();
                 frame.score += frame.roll3;
             }
-            //System.out.println("Strike current score(" + frame.frameNum + "): " + frame.score);
             return frame.nextFrame.addRoll(pe);
         }
 
@@ -186,7 +192,6 @@ public interface FrameState {
             if (noAdd && frame.pinCount > 10) {
                 frame.score += pe.pinsDownOnThisThrow();
             }
-            //System.out.println("Tenth current score(" + frame.frameNum + "): " + frame.score);
             if (pe.totalPinsDown() == 10 || pe.totalPinsDown() == 20) {
                 return FrameStatus.RESET_PINS;
             }

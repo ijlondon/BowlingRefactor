@@ -149,7 +149,6 @@ public class Lane extends Thread implements PinsetterObserver {
     private int ball;
     private int bowlIndex;
     private int frameNumber;
-    private boolean tenthFrameStrike;
 
     private int[] curScores;
     private int[][] cumulScores;
@@ -208,7 +207,6 @@ public class Lane extends Thread implements PinsetterObserver {
                     currentThrower = (Bowler) bowlerIterator.next();
 
                     canThrowAgain = true;
-                    tenthFrameStrike = false;
                     ball = 0;
                     while (canThrowAgain) {
                         setter.ballThrown();        // simulate the thrower's ball hitting
@@ -292,34 +290,8 @@ public class Lane extends Thread implements PinsetterObserver {
             return;
         }
         currentThrower.getHead().addRoll(pe);
-
+        canThrowAgain = currentThrower.getHead().canRollAgain();
         markScore(currentThrower, frameNumber + 1, pe.getThrowNumber(), pe.pinsDownOnThisThrow());
-
-        // next logic handles the ?: what conditions don't allow them another throw?
-        // handle the case of 10th frame first
-        if (frameNumber == 9) {
-            if (pe.totalPinsDown() == 10) {
-                setter.resetPins();
-                if (pe.getThrowNumber() == 1) {
-                    tenthFrameStrike = true;
-                }
-            }
-
-            if ((pe.totalPinsDown() != 10) && (pe.getThrowNumber() == 2 && !tenthFrameStrike)) {
-                canThrowAgain = false;
-            }
-
-            if (pe.getThrowNumber() == 3) {
-                canThrowAgain = false;
-            }
-        } else { // its not the 10th frame
-
-            if (pe.pinsDownOnThisThrow() == 10) {        // threw a strike
-                canThrowAgain = false;
-            } else if (pe.getThrowNumber() == 2) {
-                canThrowAgain = false;
-            }
-        }
     }
 
     /**
